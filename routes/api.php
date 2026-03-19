@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\NetworkController;
+use App\Http\Controllers\ClientController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +18,18 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::post('/networks', [NetworkController::class, 'store']);
+Route::get('/networks', [NetworkController::class, 'index']);
+Route::delete('/networks/{id}', [NetworkController::class, 'destroy']);
+
+Route::prefix('clients')->group(function () {
+    Route::post('/register', [ClientController::class, 'register']);
+    Route::post('/login',    [ClientController::class, 'login']);
+
+    Route::middleware('auth:clients')->group(function () {
+        Route::get('/me',      [ClientController::class, 'me']);
+        Route::post('/logout', [ClientController::class, 'logout']);
+    });
 });
