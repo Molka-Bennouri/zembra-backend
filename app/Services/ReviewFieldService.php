@@ -2,18 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\ResponseField;
-use Illuminate\Support\Collection;
+use App\Models\ReviewField;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
-class ResponseFieldService
+class ReviewFieldService
 {
     /**
      * Get all fields with caching
      */
     public function getAllFields(): EloquentCollection
     {
-        return ResponseField::orderBy('id')->get();
+        return ReviewField::orderBy('id')->get();
     }
-
 }

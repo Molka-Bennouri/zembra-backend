@@ -9,13 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('response_fields', function (Blueprint $table) {
+        Schema::create('networks', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('label')->nullable();
-            $table->text('description')->nullable();
+            $table->string('name');
+            $table->string('slug_pattern');
         });
     }
 
@@ -24,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('response_fields');
+        Schema::dropIfExists('networks');
     }
 };

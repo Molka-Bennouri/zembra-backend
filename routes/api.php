@@ -2,7 +2,12 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Api\ResponseFieldController;
+use App\Http\Controllers\Api\ReviewFieldController;
+use App\Http\Controllers\NetworkController;
+use App\Http\Controllers\ClientController;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -12,7 +17,26 @@ Route::get('/user', function (Request $request) {
 Route::prefix('response-fields')->group(function () {
     // Public routes
     Route::get('/', [ResponseFieldController::class, 'index']);
-    Route::get('/active', [ResponseFieldController::class, 'getActive']);
-    Route::get('/grouped', [ResponseFieldController::class, 'grouped']);
     Route::get('/{responseField}', [ResponseFieldController::class, 'show']);
+});
+// Review Fields Routes
+Route::prefix('review-fields')->group(function () {
+    // Public routes
+    Route::get('/', [ReviewFieldController::class, 'index']);
+    Route::get('/{reviewField}', [ReviewFieldController::class, 'show']);
+});
+
+
+Route::post('/networks', [NetworkController::class, 'store']);
+Route::get('/networks', [NetworkController::class, 'index']);
+Route::delete('/networks/{id}', [NetworkController::class, 'destroy']);
+
+Route::prefix('clients')->group(function () {
+    Route::post('/register', [ClientController::class, 'register']);
+    Route::post('/login',    [ClientController::class, 'login']);
+
+    Route::middleware('auth:clients')->group(function () {
+        Route::get('/me',      [ClientController::class, 'me']);
+        Route::post('/logout', [ClientController::class, 'logout']);
+    });
 });

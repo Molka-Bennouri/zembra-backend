@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\ResponseField;
-use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
+use App\Models\ReviewField;
+use Illuminate\Http\JsonResponse;
 
-class ResponseFieldController extends Controller
+class ReviewFieldController extends Controller
 {
-    /**
-     * Get all response fields
-     */
     public function index(): JsonResponse
     {
-        $fields = ResponseField::orderBy('id')->get();
+        $fields = ReviewField::orderBy('id')->get();
 
         return response()->json([
             'status' => 'success',
@@ -21,15 +18,11 @@ class ResponseFieldController extends Controller
             'count' => $fields->count(),
         ]);
     }
-    /**
-     * Get a specific response field
-     */
-    public function show(ResponseField $responseField): JsonResponse
+    public function show(ReviewField $reviewField): JsonResponse
     {
         return response()->json([
             'status' => 'success',
-            'data' => $responseField,
+            'data' => $reviewField,
         ]);
     }
-
 }
