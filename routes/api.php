@@ -2,18 +2,17 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\ResponseFieldController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::get('/user', function (Request $request) {
     return $request->user();
+})->middleware('auth:sanctum');
+
+// Response Fields Routes
+Route::prefix('response-fields')->group(function () {
+    // Public routes
+    Route::get('/', [ResponseFieldController::class, 'index']);
+    Route::get('/active', [ResponseFieldController::class, 'getActive']);
+    Route::get('/grouped', [ResponseFieldController::class, 'grouped']);
+    Route::get('/{responseField}', [ResponseFieldController::class, 'show']);
 });
