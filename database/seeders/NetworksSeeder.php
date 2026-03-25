@@ -18,7 +18,7 @@ class NetworksSeeder extends Seeder //php artisan db:seed --class=NetworksSeeder
             ],
             [
                 'name'         => 'Kununu',
-                'slug_pattern' => '@^(?:(?:(?:https?://)?(?:www\.)?kununu\.com)?/)?(?:de/)?([a-z0-9-]+)@',
+                'slug_pattern' => '@^(?:(?:(?:https?://)?(?:www\.)?kununu\.com)?/)?(?:de/)?([a-z][a-z0-9-]*[a-z0-9])$@',
             ],
             [
                 'name'         => 'Viator',
