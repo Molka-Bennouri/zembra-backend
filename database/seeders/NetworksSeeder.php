@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class NetworksSeeder extends Seeder
+class NetworksSeeder extends Seeder //php artisan db:seed --class=NetworksSeeder
 {
     public function run(): void
     {
@@ -14,7 +14,7 @@ class NetworksSeeder extends Seeder
         DB::table('networks')->insert([
             [
                 'name'         => 'Community Health Network',
-                'slug_pattern' => '@^https?://(?:[\w-]+\.)*ecommunity\.[a-z.]+(?:/[^/]+)*/providers?/[A-Za-z]+/([0-9]+)/?$@i',
+                'slug_pattern' => '@^https?://(?:[\w-]+\.)*ecommunity\.[a-z.]+/(?:[^/]+/)*providers?/[A-Za-z]+/([0-9]+)/?$@i',
             ],
             [
                 'name'         => 'Kununu',
