@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ListingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,3 +41,5 @@ Route::prefix('clients')->group(function () {
         Route::post('/logout', [ClientController::class, 'logout']);
     });
 });
+
+Route::get('/listing/{network}', [ListingController::class, 'fetch']);

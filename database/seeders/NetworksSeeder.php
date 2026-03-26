@@ -13,6 +13,10 @@ class NetworksSeeder extends Seeder //php artisan db:seed --class=NetworksSeeder
 
         DB::table('networks')->insert([
             [
+                'name'         => 'Airbnb',
+                'slug_pattern' => '@^(?:(?:(?:(?:(?:https?://)?(?:[\w-]+\.)*airbnb(?:\.[a-z]{2,3}){1,2}/)?/?))?(?:[\w+-]+)?/)?([\d+-]+)?/?(?:[?#].*)?$@i',
+            ],
+            [
                 'name'         => 'Community Health Network',
                 'slug_pattern' => '@^https?://(?:[\w-]+\.)*ecommunity\.[a-z.]+/(?:[^/]+/)*providers?/[A-Za-z]+/([0-9]+)/?$@i',
             ],
