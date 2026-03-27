@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\ScrapingHistoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,3 +44,7 @@ Route::prefix('clients')->group(function () {
 });
 
 Route::get('/listing/{network}', [ListingController::class, 'fetch']);
+
+Route::get('/history', [ScrapingHistoryController::class, 'index']);
+Route::delete('/history/{id}', [ScrapingHistoryController::class, 'destroy']);
+Route::delete('/history', [ScrapingHistoryController::class, 'destroyAll']);
