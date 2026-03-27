@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\ListingController;
-use App\Http\Controllers\ScrapingHistoryController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\NetworkController;
 use App\Http\Controllers\Api\ResponseFieldController;
 use App\Http\Controllers\Api\ReviewFieldController;
-use App\Http\Controllers\NetworkController;
+use App\Http\Controllers\ListingController;
+use App\Http\Controllers\ScrapingHistoryController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\ForgotPasswordController;
@@ -61,3 +62,6 @@ Route::prefix('auth')->group(function () {
 });
 Route::post('/password/forgot', [ForgotPasswordController::class, 'sendResetLink']);
 Route::post('/password/reset', [ForgotPasswordController::class, 'resetPassword']);
+
+Route::post('/reviews', [ReviewController::class, 'create']);
+Route::get('/reviews', [ReviewController::class, 'fetch']);

@@ -10,5 +10,5 @@ class Network extends Model
     use HasFactory;
 
     public $timestamps = false;
-    protected $fillable = ['name', 'slug_pattern'];
+    protected $fillable = ['name','label', 'slug_pattern'];
 }

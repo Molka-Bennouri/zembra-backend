@@ -13,19 +13,23 @@ class NetworksSeeder extends Seeder //php artisan db:seed --class=NetworksSeeder
 
         DB::table('networks')->insert([
             [
-                'name'         => 'Airbnb',
+                'name'         => 'airbnb',
+                'label'        => 'Airbnb',
                 'slug_pattern' => '@^(?:(?:(?:(?:(?:https?://)?(?:[\w-]+\.)*airbnb(?:\.[a-z]{2,3}){1,2}/)?/?))?(?:[\w+-]+)?/)?([\d+-]+)?/?(?:[?#].*)?$@i',
             ],
             [
-                'name'         => 'Community Health Network',
+                'name'         => 'ecommunity',
+                'label'        => 'Community Health Network',
                 'slug_pattern' => '@^https?://(?:[\w-]+\.)*ecommunity\.[a-z.]+/(?:[^/]+/)*providers?/[A-Za-z]+/([0-9]+)/?$@i',
             ],
             [
-                'name'         => 'Kununu',
+                'name'         => 'kununu',
+                'label'        => 'Kununu',
                 'slug_pattern' => '@^(?:(?:(?:https?://)?(?:www\.)?kununu\.com)?/)?(?:de/)?([a-z][a-z0-9-]*[a-z0-9])$@',
             ],
             [
-                'name'         => 'Viator',
+                'name'         => 'viator',
+                'label'        => 'Viator',
                 'slug_pattern' => '@^https?://(?:www\.)?viator\.com/tours/[A-Za-z0-9-]+/[A-Za-z0-9-]+/d\d+-\d+[A-Z]\d+$@i',
             ],
         ]);
