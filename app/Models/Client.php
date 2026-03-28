@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable; // ✅ Ajouter
 
 class Client extends Authenticatable implements JWTSubject
 {
-    use HasFactory;
+    use HasFactory, Notifiable; // ✅ Ajouter Notifiable
 
     public $timestamps = false;
 
@@ -16,8 +17,8 @@ class Client extends Authenticatable implements JWTSubject
         'full_name',
         'email',
         'password',
-        'provider',      // Ajouter pour SSO
-        'provider_id',   // Ajouter pour SSO
+        'provider',      // SSO
+        'provider_id',   // SSO
     ];
 
     protected $hidden = ['password'];
@@ -29,5 +30,11 @@ class Client extends Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims() {
         return [];
+    }
+
+    // ✅ Notification pour reset password
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new \App\Notifications\ResetClientPasswordNotification($token));
     }
 }
