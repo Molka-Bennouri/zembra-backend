@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable; // ✅ Ajouter
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 
-class Client extends Authenticatable implements JWTSubject
+
+class Client extends Authenticatable implements JWTSubject, CanResetPassword
 {
-    use HasFactory, Notifiable; // ✅ Ajouter Notifiable
+    use HasFactory, Notifiable, CanResetPasswordTrait;
 
     public $timestamps = false;
 
@@ -17,13 +20,12 @@ class Client extends Authenticatable implements JWTSubject
         'full_name',
         'email',
         'password',
-        'provider',      // SSO
-        'provider_id',   // SSO
+        'provider',
+        'provider_id',
     ];
 
     protected $hidden = ['password'];
 
-    // Required by JWTSubject
     public function getJWTIdentifier() {
         return $this->getKey();
     }
@@ -32,7 +34,6 @@ class Client extends Authenticatable implements JWTSubject
         return [];
     }
 
-    // ✅ Notification pour reset password
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new \App\Notifications\ResetClientPasswordNotification($token));

@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\ReviewFieldController;
 use App\Http\Controllers\NetworkController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\Api\SocialAuthController;
-use App\Http\Controllers\Api\ForgotPasswordController;
+use App\Http\Controllers\Api\PasswordController;
 
 
 Route::get('/user', function (Request $request) {
@@ -51,5 +51,5 @@ Route::prefix('auth')->group(function () {
     Route::get('/github/redirect', [SocialAuthController::class, 'githubRedirect']);
     Route::get('/github/callback', [SocialAuthController::class, 'githubCallback']);
 });
-Route::post('/password/forgot', [ForgotPasswordController::class, 'sendResetLink']);
-Route::post('/password/reset', [ForgotPasswordController::class, 'resetPassword']);
+Route::post('/clients/forgot-password', [PasswordController::class, 'forgot']);
+Route::post('/clients/reset-password', [PasswordController::class, 'reset']);
