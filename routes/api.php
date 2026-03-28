@@ -9,8 +9,6 @@ use App\Http\Controllers\NetworkController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\ForgotPasswordController;
-use App\Http\Controllers\Api\PasswordController;
-
 
 
 Route::get('/user', function (Request $request) {
@@ -55,6 +53,3 @@ Route::prefix('auth')->group(function () {
 });
 Route::post('/password/forgot', [ForgotPasswordController::class, 'sendResetLink']);
 Route::post('/password/reset', [ForgotPasswordController::class, 'resetPassword']);
-
-Route::post('/clients/reset-password', [PasswordController::class, 'reset']);
-Route::post('/clients/forgot-password', [PasswordController::class, 'forgot']);

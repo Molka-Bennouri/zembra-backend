@@ -12,11 +12,13 @@ class NetworkController extends Controller
     {
         $request->validate([
             'name' => 'required|string|unique:networks,name',
+            'label' => 'required|string',
             'slug_pattern' => 'required|string',
         ]);
 
         $network = Network::create([
             'name' => $request->name,
+            'label' => $request->label,
             'slug_pattern' => $request->slug_pattern,
         ]);
 

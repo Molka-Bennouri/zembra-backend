@@ -30,42 +30,42 @@ class ResponseFieldSeeder extends Seeder
                 'description' => 'Slug for review page URL',
             ],
             [
-                'name' => 'ReviewPageUrl',
+                'name' => 'link',
                 'label' => 'Review Page URL',
                 'description' => 'Full URL for review page',
             ],
             [
-                'name' => 'Aliases',
+                'name' => 'aliases',
                 'label' => 'Aliases',
                 'description' => 'Alternative names or aliases',
             ],
             [
-                'name' => 'Categories',
+                'name' => 'categories',
                 'label' => 'Categories',
                 'description' => 'Business categories',
             ],
             [
-                'name' => 'BusinessName',
+                'name' => 'network',
                 'label' => 'Business Name',
                 'description' => 'Official business name',
             ],
             [
-                'name' => 'Phone',
+                'name' => 'phone',
                 'label' => 'Phone',
                 'description' => 'Business phone number',
             ],
             [
-                'name' => 'Photos',
+                'name' => 'photos',
                 'label' => 'Photos',
                 'description' => 'Business photos and images',
             ],
             [
-                'name' => 'PriceRange',
+                'name' => 'priceRange',
                 'label' => 'Price Range',
                 'description' => 'Price range indicator',
             ],
             [
-                'name' => 'ProfileImage',
+                'name' => 'profileImage',
                 'label' => 'Profile Image',
                 'description' => 'Main profile/logo image',
             ],
@@ -75,7 +75,7 @@ class ResponseFieldSeeder extends Seeder
                 'description' => 'Business website URL',
             ],
             [
-                'name' => 'TotalReviewCount',
+                'name' => 'globalRating',
                 'label' => 'Total Review Count',
                 'description' => 'Total number of reviews',
             ],
@@ -85,7 +85,7 @@ class ResponseFieldSeeder extends Seeder
                 'description' => 'Overall business rating',
             ],
             [
-                'name' => 'FormattedAddress',
+                'name' => 'formattedAddress',
                 'label' => 'Formatted Address',
                 'description' => 'Complete formatted address',
             ],
