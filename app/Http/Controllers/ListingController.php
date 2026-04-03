@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\QueryHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -22,6 +23,23 @@ class ListingController extends Controller
             'fields' => $fields ? explode(',', $fields) : null,
         ]));
 
-        return response()->json($response->json(), $response->status());
+        $responseData = $response->json();
+
+        // Save to history if client is authenticated
+        if ($request->user('clients')) {
+            QueryHistory::create([
+                'client_id'   => $request->user('clients')->id,
+                'type'        => 'listing',
+                'network'     => $network,
+                'slug'        => $slug,
+                'fields'      => $fields ? explode(',', $fields) : [],
+                'filters'     => null,
+                'status'      => $response->successful() ? 'SUCCESS' : 'ERROR',
+                'response'    => $responseData,
+                'executed_at' => now(),
+            ]);
+        }
+
+        return response()->json($responseData, $response->status());
     }
 }
