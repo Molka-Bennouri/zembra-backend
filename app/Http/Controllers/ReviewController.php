@@ -13,12 +13,19 @@ class ReviewController extends Controller
         $response = Http::withHeaders([
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer ' . config('services.zembra.key'),
-        ])->post('https://api.zembra.io/reviews', array_filter([
-            'network'    => $request->query('network'),
-            'slug'       => $request->query('slug'),
-            'fields'     => $request->query('fields', []),
-            'monitoring' => 'none',
-        ]));
+        ])->withoutVerifying()->withOptions([
+            'query' => array_filter([
+                'network'    => $request->query('network'),
+                'slug'       => $request->query('slug'),
+                'fields'     => $request->query('fields', []),
+                'monitoring' => 'none',
+                'includeRawData' => $request->query('includeRawData'),
+                'sortBy'        => $request->query('sortBy'),
+                'sortDirection' => $request->query('sortDirection'),
+                'postedBefore'  => $request->query('postedBefore'),
+                'postedAfter'   => $request->query('postedAfter'),
+            ])
+        ])->post('https://localapi.zembra.io/reviews');
 
         $responseData = $response->json();
 
@@ -44,10 +51,22 @@ class ReviewController extends Controller
         $response = Http::withHeaders([
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer ' . config('services.zembra.key'),
-        ])->get('https://api.zembra.io/reviews', [
+        ])->withoutVerifying()->get('https://localapi.zembra.io/reviews', array_filter([
             'network' => $request->query('network'),
             'slug'    => $request->query('slug'),
-        ]);
+            'fields'  => $request->query('fields', []),
+            'includeRawData' => $request->query('includeRawData'),
+            'sortBy'        => $request->query('sortBy'),
+            'sortDirection' => $request->query('sortDirection'),
+            'postedBefore'  => $request->query('postedBefore'),
+            'postedAfter'   => $request->query('postedAfter'),
+            // filters will plug in here once wired up:
+
+            // 'limit'      => $request->query('limit'),
+            // 'offset'     => $request->query('offset'),
+            // 'min_rating' => $request->query('min_rating'),
+            // 'max_rating' => $request->query('max_rating'),
+        ]));
 
         return response()->json($response->json(), $response->status());
     }
