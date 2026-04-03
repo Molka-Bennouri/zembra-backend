@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\ListingController;
+use App\Http\Controllers\QueryHistoryController;
+use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,17 +20,15 @@ Route::get('/user', function (Request $request) {
 
 // Response Fields Routes
 Route::prefix('response-fields')->group(function () {
-    // Public routes
     Route::get('/', [ResponseFieldController::class, 'index']);
     Route::get('/{responseField}', [ResponseFieldController::class, 'show']);
 });
+
 // Review Fields Routes
 Route::prefix('review-fields')->group(function () {
-    // Public routes
     Route::get('/', [ReviewFieldController::class, 'index']);
     Route::get('/{reviewField}', [ReviewFieldController::class, 'show']);
 });
-
 
 Route::post('/networks', [NetworkController::class, 'store']);
 Route::get('/networks', [NetworkController::class, 'index']);
@@ -40,18 +41,31 @@ Route::prefix('clients')->group(function () {
     Route::middleware('auth:clients')->group(function () {
         Route::get('/me',      [ClientController::class, 'me']);
         Route::post('/logout', [ClientController::class, 'logout']);
+
+        // Query History
+        Route::get('/query-history',         [QueryHistoryController::class, 'index']);
+        Route::delete('/query-history/{id}', [QueryHistoryController::class, 'destroy']);
+        Route::delete('/query-history',      [QueryHistoryController::class, 'destroyAll']);
     });
 });
 
 Route::prefix('auth')->group(function () {
-    // Google
     Route::get('/google/redirect', [SocialAuthController::class, 'googleRedirect']);
     Route::get('/google/callback', [SocialAuthController::class, 'googleCallback']);
-    //Git
     Route::get('/github/redirect', [SocialAuthController::class, 'githubRedirect']);
     Route::get('/github/callback', [SocialAuthController::class, 'githubCallback']);
 });
+
 Route::post('/clients/forgot-password', [PasswordController::class, 'forgot']);
+
 Route::post('/clients/reset-password', [PasswordController::class, 'reset']);
 
 Route::get('/listing/{network}', [ListingController::class, 'fetch']);
+
+Route::post('/clients/reset-password',  [PasswordController::class, 'reset']);
+
+Route::get('/listing/{network}', [ListingController::class, 'fetch']);
+
+Route::get('/reviews',  [ReviewController::class, 'fetch']);
+Route::post('/reviews', [ReviewController::class, 'create']);
+
