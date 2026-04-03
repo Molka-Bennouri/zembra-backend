@@ -53,3 +53,5 @@ Route::prefix('auth')->group(function () {
 });
 Route::post('/clients/forgot-password', [PasswordController::class, 'forgot']);
 Route::post('/clients/reset-password', [PasswordController::class, 'reset']);
+
+Route::get('/listing/{network}', [ListingController::class, 'fetch']);
