@@ -14,7 +14,7 @@ class ReviewController extends Controller
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer ' . config('services.zembra.key'),
         ])->withoutVerifying()->withOptions([
-            'query' => array_filter([
+            'query' => $this->filterParams([
                 'network'    => $request->query('network'),
                 'slug'       => $request->query('slug'),
                 'fields'     => $request->query('fields', []),
@@ -51,7 +51,7 @@ class ReviewController extends Controller
         $response = Http::withHeaders([
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer ' . config('services.zembra.key'),
-        ])->withoutVerifying()->get('https://localapi.zembra.io/reviews', array_filter([
+        ])->withoutVerifying()->get('https://localapi.zembra.io/reviews', $this->filterParams([
             'network' => $request->query('network'),
             'slug'    => $request->query('slug'),
             'fields'  => $request->query('fields', []),
@@ -69,5 +69,10 @@ class ReviewController extends Controller
         ]));
 
         return response()->json($response->json(), $response->status());
+    }
+
+    private function filterParams(array $params): array
+    {
+        return array_filter($params, fn($v) => $v !== null && $v !== '');
     }
 }

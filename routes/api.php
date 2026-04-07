@@ -41,6 +41,7 @@ Route::prefix('clients')->group(function () {
     Route::middleware('auth:clients')->group(function () {
         Route::get('/me',      [ClientController::class, 'me']);
         Route::post('/logout', [ClientController::class, 'logout']);
+        Route::delete('/delete-account', [ClientController::class, 'deleteAccount']);
 
         // Query History
         Route::get('/query-history',         [QueryHistoryController::class, 'index']);

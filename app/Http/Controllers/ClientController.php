@@ -49,4 +49,26 @@ class ClientController extends Controller
         auth('clients')->logout();
         return response()->json(['message' => 'Logged out']);
     }
+
+    public function deleteAccount(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        $client = auth('clients')->user();
+
+        // Check password
+        if (!Hash::check($request->password, $client->password)) {
+            return response()->json(['error' => 'Incorrect password.'], 403);
+        }
+
+        // Invalidate the JWT token
+        auth('clients')->logout();
+
+        // Delete the account
+        $client->delete();
+
+        return response()->json(['message' => 'Account deleted successfully.'], 200);
+    }
 }
