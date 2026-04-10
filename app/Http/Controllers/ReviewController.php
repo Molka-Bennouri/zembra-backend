@@ -68,11 +68,37 @@ class ReviewController extends Controller
             // 'max_rating' => $request->query('max_rating'),
         ]));
 
-        return response()->json($response->json(), $response->status());
+        $responseData = $response->json();
+
+        $reviews = collect(data_get($responseData, 'data.reviews', []))
+            ->pluck('text')
+            ->filter()
+            ->values()
+            ->toArray();
+
+        return response()->json([
+            'zembra'  => $responseData,
+            'reviews' => $reviews,
+        ], $response->status());
     }
 
     private function filterParams(array $params): array
     {
         return array_filter($params, fn($v) => $v !== null && $v !== '');
+    }
+
+    public function analyze(Request $request)
+    {
+        $reviews = $request->input('reviews', []);
+
+        if (empty($reviews)) {
+            return response()->json(['message' => 'No reviews provided.'], 404);
+        }
+
+        $aiResponse = Http::timeout(60)->post('http://127.0.0.1:8001/analyze', [
+            'reviews' => $reviews,
+        ]);
+
+        return response()->json($aiResponse->json(), $aiResponse->status());
     }
 }

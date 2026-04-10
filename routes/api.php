@@ -42,6 +42,8 @@ Route::prefix('clients')->group(function () {
         Route::get('/me',      [ClientController::class, 'me']);
         Route::post('/logout', [ClientController::class, 'logout']);
         Route::delete('/delete-account', [ClientController::class, 'deleteAccount']);
+        Route::put('/profile',  [ClientController::class, 'updateProfile']);
+        Route::put('/password', [ClientController::class, 'updatePassword']);
 
         // Query History
         Route::get('/query-history',         [QueryHistoryController::class, 'index']);
@@ -62,5 +64,6 @@ Route::post('/clients/reset-password',  [PasswordController::class, 'reset']);
 
 Route::get('/listing/{network}', [ListingController::class, 'fetch']);
 
+Route::post('/reviews/analyze', [ReviewController::class, 'analyze']);
 Route::get('/reviews',  [ReviewController::class, 'fetch']);
 Route::post('/reviews', [ReviewController::class, 'create']);

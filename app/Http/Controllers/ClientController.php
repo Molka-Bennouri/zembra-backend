@@ -71,4 +71,43 @@ class ClientController extends Controller
 
         return response()->json(['message' => 'Account deleted successfully.'], 200);
     }
+
+    // Update profile (name & email)
+    public function updateProfile(Request $request)
+    {
+        $client = auth('clients')->user();
+
+        $request->validate([
+            'full_name' => 'required|string',
+            'email'     => 'required|email|unique:clients,email,' . $client->id,
+        ]);
+
+        $client->update([
+            'full_name' => $request->full_name,
+            'email'     => $request->email,
+        ]);
+
+        return response()->json(['message' => 'Profile updated successfully.', 'client' => $client]);
+    }
+
+// Update password
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password'     => 'required|min:6|confirmed',
+        ]);
+
+        $client = auth('clients')->user();
+
+        if (!Hash::check($request->current_password, $client->password)) {
+            return response()->json(['error' => 'Current password is incorrect.'], 403);
+        }
+
+        $client->update([
+            'password' => Hash::make($request->new_password),
+        ]);
+
+        return response()->json(['message' => 'Password updated successfully.']);
+    }
 }
