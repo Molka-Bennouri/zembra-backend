@@ -13,12 +13,19 @@ class ReviewController extends Controller
         $response = Http::withHeaders([
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer ' . config('services.zembra.key'),
-        ])->post('https://api.zembra.io/reviews', array_filter([
-            'network'    => $request->query('network'),
-            'slug'       => $request->query('slug'),
-            'fields'     => $request->query('fields', []),
-            'monitoring' => 'none',
-        ]));
+        ])->withoutVerifying()->withOptions([
+            'query' => $this->filterParams([
+                'network'    => $request->query('network'),
+                'slug'       => $request->query('slug'),
+                'fields'     => $request->query('fields', []),
+                'monitoring' => 'none',
+                'includeRawData' => $request->query('includeRawData'),
+                'sortBy'        => $request->query('sortBy'),
+                'sortDirection' => $request->query('sortDirection'),
+                'postedBefore'  => $request->query('postedBefore'),
+                'postedAfter'   => $request->query('postedAfter'),
+            ])
+        ])->post('https://localapi.zembra.io/reviews');
 
         $responseData = $response->json();
 
@@ -44,11 +51,54 @@ class ReviewController extends Controller
         $response = Http::withHeaders([
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer ' . config('services.zembra.key'),
-        ])->get('https://api.zembra.io/reviews', [
+        ])->withoutVerifying()->get('https://localapi.zembra.io/reviews', $this->filterParams([
             'network' => $request->query('network'),
             'slug'    => $request->query('slug'),
+            'fields'  => $request->query('fields', []),
+            'includeRawData' => $request->query('includeRawData'),
+            'sortBy'        => $request->query('sortBy'),
+            'sortDirection' => $request->query('sortDirection'),
+            'postedBefore'  => $request->query('postedBefore'),
+            'postedAfter'   => $request->query('postedAfter'),
+            // filters will plug in here once wired up:
+
+            // 'limit'      => $request->query('limit'),
+            // 'offset'     => $request->query('offset'),
+            // 'min_rating' => $request->query('min_rating'),
+            // 'max_rating' => $request->query('max_rating'),
+        ]));
+
+        $responseData = $response->json();
+
+        $reviews = collect(data_get($responseData, 'data.reviews', []))
+            ->pluck('text')
+            ->filter()
+            ->values()
+            ->toArray();
+
+        return response()->json([
+            'zembra'  => $responseData,
+            'reviews' => $reviews,
+        ], $response->status());
+    }
+
+    private function filterParams(array $params): array
+    {
+        return array_filter($params, fn($v) => $v !== null && $v !== '');
+    }
+
+    public function analyze(Request $request)
+    {
+        $reviews = $request->input('reviews', []);
+
+        if (empty($reviews)) {
+            return response()->json(['message' => 'No reviews provided.'], 404);
+        }
+
+        $aiResponse = Http::timeout(60)->post('http://127.0.0.1:8001/analyze', [
+            'reviews' => $reviews,
         ]);
 
-        return response()->json($response->json(), $response->status());
+        return response()->json($aiResponse->json(), $aiResponse->status());
     }
 }

@@ -13,12 +13,12 @@ class ListingController extends Controller
         $slug   = $request->query('slug');
         $fields = $request->query('fields', '');
 
-        $url = "https://api.zembra.io/listing/{$network}";
+        $url = "https://localapi.zembra.io/listing/{$network}";
 
         $response = Http::withHeaders([
             'Accept'        => 'application/json',
             'Authorization' => 'Bearer ' . config('services.zembra.key'),
-        ])->get($url, array_filter([
+        ])->withoutVerifying()->get($url, array_filter([  // ← add withoutVerifying()
             'slug'   => $slug,
             'fields' => $fields ? explode(',', $fields) : null,
         ]));
