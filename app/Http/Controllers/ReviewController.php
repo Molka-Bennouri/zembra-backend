@@ -89,13 +89,18 @@ class ReviewController extends Controller
 
     public function analyze(Request $request)
     {
+        set_time_limit(0); // Remove PHP time limit entirely
+
         $reviews = $request->input('reviews', []);
 
         if (empty($reviews)) {
             return response()->json(['message' => 'No reviews provided.'], 404);
         }
 
-        $aiResponse = Http::timeout(60)->post('http://127.0.0.1:8001/analyze', [
+        $aiResponse = Http::withOptions([
+            'connect_timeout' => 5,
+            'timeout'         => 0, // No timeout — wait as long as needed
+        ])->post('http://127.0.0.1:8001/analyze', [
             'reviews' => $reviews,
         ]);
 
