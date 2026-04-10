@@ -12,6 +12,7 @@ use App\Http\Controllers\NetworkController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\PasswordController;
+use App\Http\Controllers\Api\DashboardController;
 
 
 Route::get('/user', function (Request $request) {
@@ -72,4 +73,8 @@ Route::get('/listing/{network}', [ListingController::class, 'fetch']);
 Route::post('/reviews/analyze', [ReviewController::class, 'analyze']);
 Route::get('/reviews',  [ReviewController::class, 'fetch']);
 Route::post('/reviews', [ReviewController::class, 'create']);
+
+Route::get('/kpis', [DashboardController::class, 'kpis']);
+Route::get('/dashboard/requests', [DashboardController::class, 'requests']);
+
 
