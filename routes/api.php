@@ -12,6 +12,7 @@ use App\Http\Controllers\NetworkController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\PasswordController;
+use App\Http\Controllers\Api\DashboardController;
 
 
 Route::get('/user', function (Request $request) {
@@ -60,6 +61,11 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::post('/clients/forgot-password', [PasswordController::class, 'forgot']);
+
+Route::post('/clients/reset-password', [PasswordController::class, 'reset']);
+
+Route::get('/listing/{network}', [ListingController::class, 'fetch']);
+
 Route::post('/clients/reset-password',  [PasswordController::class, 'reset']);
 
 Route::get('/listing/{network}', [ListingController::class, 'fetch']);
@@ -67,3 +73,8 @@ Route::get('/listing/{network}', [ListingController::class, 'fetch']);
 Route::post('/reviews/analyze', [ReviewController::class, 'analyze']);
 Route::get('/reviews',  [ReviewController::class, 'fetch']);
 Route::post('/reviews', [ReviewController::class, 'create']);
+
+Route::get('/kpis', [DashboardController::class, 'kpis']);
+Route::get('/dashboard/requests', [DashboardController::class, 'requests']);
+
+
