@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QueryHistoryController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
@@ -76,5 +77,13 @@ Route::post('/reviews', [ReviewController::class, 'create']);
 
 Route::get('/kpis', [DashboardController::class, 'kpis']);
 Route::get('/dashboard/requests', [DashboardController::class, 'requests']);
+
+Route::middleware('auth:clients')->prefix('notifications')->group(function () {
+    Route::get('/', [NotificationController::class, 'index']);
+    Route::patch('/mark-all-seen', [NotificationController::class, 'markAllSeen']);
+    Route::patch('/{notification}/seen', [NotificationController::class, 'markSeen']);
+    Route::delete('/', [NotificationController::class, 'clearAll']);
+    Route::delete('/{notification}', [NotificationController::class, 'destroy']);
+});
 
 
