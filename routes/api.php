@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ListingController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QueryHistoryController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
@@ -13,7 +14,10 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\DashboardController;
-
+use App\Http\Controllers\PlanController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\StripeController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -61,12 +65,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::post('/clients/forgot-password', [PasswordController::class, 'forgot']);
-
 Route::post('/clients/reset-password', [PasswordController::class, 'reset']);
-
-Route::get('/listing/{network}', [ListingController::class, 'fetch']);
-
-Route::post('/clients/reset-password',  [PasswordController::class, 'reset']);
 
 Route::get('/listing/{network}', [ListingController::class, 'fetch']);
 
@@ -74,7 +73,30 @@ Route::post('/reviews/analyze', [ReviewController::class, 'analyze']);
 Route::get('/reviews',  [ReviewController::class, 'fetch']);
 Route::post('/reviews', [ReviewController::class, 'create']);
 
-Route::get('/kpis', [DashboardController::class, 'kpis']);
-Route::get('/dashboard/requests', [DashboardController::class, 'requests']);
+Route::middleware('auth:clients')->group(function () {
+    Route::get('/kpis', [DashboardController::class, 'kpis']);
+    Route::get('/dashboard/requests', [DashboardController::class, 'requests']);
+});
 
+Route::middleware('auth:clients')->prefix('notifications')->group(function () {
+    Route::get('/', [NotificationController::class, 'index']);
+    Route::patch('/mark-all-seen', [NotificationController::class, 'markAllSeen']);
+    Route::patch('/{notification}/seen', [NotificationController::class, 'markSeen']);
+    Route::delete('/', [NotificationController::class, 'clearAll']);
+    Route::delete('/{notification}', [NotificationController::class, 'destroy']);
+});
 
+Route::get('/plans', [PlanController::class, 'index']);
+
+// Stripe webhook (sans auth)
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+
+Route::middleware('auth:clients')->group(function () {
+    Route::get('/payments/methods', [PaymentController::class, 'listPaymentMethods']);
+    Route::post('/stripe/save-payment-method', [StripeController::class, 'savePaymentMethod']);
+
+    Route::post('/stripe/checkout', [PaymentController::class, 'createCheckoutSession']);
+    Route::get('/stripe/payment-methods', [PaymentController::class, 'listPaymentMethods']);
+});
+
+Route::middleware('auth:clients')->get('/profile', [ClientController::class, 'profile']);
