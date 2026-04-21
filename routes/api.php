@@ -51,6 +51,9 @@ Route::prefix('clients')->group(function () {
         Route::get('/query-history',         [QueryHistoryController::class, 'index']);
         Route::delete('/query-history/{id}', [QueryHistoryController::class, 'destroy']);
         Route::delete('/query-history',      [QueryHistoryController::class, 'destroyAll']);
+
+        Route::get('/kpis', [DashboardController::class, 'kpis']);
+        Route::get('/dashboard/requests', [DashboardController::class, 'requests']);
     });
 });
 
@@ -74,9 +77,6 @@ Route::get('/listing/{network}', [ListingController::class, 'fetch']);
 Route::post('/reviews/analyze', [ReviewController::class, 'analyze']);
 Route::get('/reviews',  [ReviewController::class, 'fetch']);
 Route::post('/reviews', [ReviewController::class, 'create']);
-
-Route::get('/kpis', [DashboardController::class, 'kpis']);
-Route::get('/dashboard/requests', [DashboardController::class, 'requests']);
 
 Route::middleware('auth:clients')->prefix('notifications')->group(function () {
     Route::get('/', [NotificationController::class, 'index']);

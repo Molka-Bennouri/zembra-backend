@@ -9,40 +9,32 @@ use App\Models\QueryHistory;
 
 class DashboardController extends Controller
 {
-    /**
-     * GET /api/kpis  — existant, inchangé
-     */
     public function kpis(): JsonResponse
     {
+        $clientId = auth('clients')->id();
         $since = now()->subDay();
 
-        // Base query (QueryHistory)
-        $requests24hQuery = QueryHistory::where('executed_at', '>=', $since);
+        $requests24hQuery = QueryHistory::where('client_id', $clientId)
+            ->where('executed_at', '>=', $since);
 
-        // Totals
-        $total = (clone $requests24hQuery)->count();
+        $total   = (clone $requests24hQuery)->count();
         $success = (clone $requests24hQuery)->where('status', 'success')->count();
-        $errors = (clone $requests24hQuery)->where('status', 'error')->count();
+        $errors  = (clone $requests24hQuery)->where('status', 'error')->count();
 
         $successRate = $total > 0
             ? round(($success / $total) * 100, 2)
             : 0;
 
-        // Networks
         $totalNetworks = Network::count();
 
         $networks = Network::select('id', 'name', 'label')
             ->get()
-            ->map(function ($n) {
-                return [
-                    'id' => $n->id,
-                    'name' => $n->name,
-                    'label' => $n->label,
-                    'active' => true, // fake (comme ton frontend l’attend)
-                ];
-            });
-
-
+            ->map(fn($n) => [
+                'id'     => $n->id,
+                'name'   => $n->name,
+                'label'  => $n->label,
+                'active' => true,
+            ]);
 
         return response()->json([
             'networks' => [
@@ -59,13 +51,12 @@ class DashboardController extends Controller
         ]);
     }
 
-    /**
-     * GET /api/dashboard/requests  — NOUVEAU
-     * 50 dernières ScrapingRequests pour le tableau du dashboard.
-     */
-    public function requests()
+    public function requests(): JsonResponse
     {
-        $data = QueryHistory::orderBy('executed_at', 'desc')
+        $clientId = auth('clients')->id();
+
+        $data = QueryHistory::where('client_id', $clientId)
+            ->orderBy('executed_at', 'desc')
             ->take(5)
             ->get();
 
@@ -73,7 +64,6 @@ class DashboardController extends Controller
             $data->map(function ($r) {
                 $response = $r->response ?? [];
 
-                // Extraire le code HTTP depuis exception.Code
                 $code = null;
                 if (isset($response['exception']['Code'])) {
                     $code = $response['exception']['Code'];
@@ -82,12 +72,12 @@ class DashboardController extends Controller
                 }
 
                 return [
-                    'id'         => $r->id,
-                    'network'    => $r->network ?? 'unknown',
-                    'slug'       => $r->slug ?? '-',
-                    'status'     => strtolower($r->status ?? 'error'),
-                    'status_code'=> $code,
-                    'created_at' => $r->executed_at,
+                    'id'          => $r->id,
+                    'network'     => $r->network ?? 'unknown',
+                    'slug'        => $r->slug ?? '-',
+                    'status'      => strtolower($r->status ?? 'error'),
+                    'status_code' => $code,
+                    'created_at'  => $r->executed_at,
                 ];
             })
         );
