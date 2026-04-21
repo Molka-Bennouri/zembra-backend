@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Hash;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Stripe\Stripe;
+use Stripe\Customer;
 
 class ClientController extends Controller
 {
@@ -22,10 +23,25 @@ class ClientController extends Controller
             'email'     => $request->email,
             'password'  => Hash::make($request->password),
         ]);
+        // 2. create Stripe customer
+        Stripe::setApiKey(config('services.stripe.secret'));
 
-        $token = JWTAuth::fromUser($client);
+        $stripeCustomer = Customer::create([
+            'email' => $client->email,
+            'name'  => $client->full_name,
+        ]);
 
-        return response()->json(['token' => $token], 201);
+        // 3. save stripe_customer_id in DB
+        $client->update([
+            'stripe_customer_id' => $stripeCustomer->id,
+        ]);
+
+        $token = auth('clients')->login($client);
+
+        return response()->json([
+            'token' => $token,
+            'stripe_customer_id' => $stripeCustomer->id
+        ], 201);
     }
 
     // Login
@@ -109,5 +125,16 @@ class ClientController extends Controller
         ]);
 
         return response()->json(['message' => 'Password updated successfully.']);
+    }
+    public function profile()
+    {
+        $client = auth('clients')->user();
+
+        return response()->json([
+            'id' => $client->id,
+            'full_name' => $client->full_name,
+            'email' => $client->email,
+            'stripe_customer_id' => $client->stripe_customer_id,
+        ]);
     }
 }

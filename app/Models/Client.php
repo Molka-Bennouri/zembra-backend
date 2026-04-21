@@ -22,6 +22,7 @@ class Client extends Authenticatable implements JWTSubject, CanResetPassword
         'password',
         'provider',
         'provider_id',
+        'stripe_customer_id',
     ];
 
     protected $hidden = ['password'];
