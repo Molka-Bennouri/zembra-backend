@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FieldController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\QueryHistoryController;
@@ -7,8 +8,6 @@ use App\Http\Controllers\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\ResponseFieldController;
-use App\Http\Controllers\Api\ReviewFieldController;
 use App\Http\Controllers\NetworkController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\Api\SocialAuthController;
@@ -19,22 +18,6 @@ use App\Http\Controllers\Api\DashboardController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-
-// Response Fields Routes
-Route::prefix('response-fields')->group(function () {
-    Route::get('/', [ResponseFieldController::class, 'index']);
-    Route::get('/{responseField}', [ResponseFieldController::class, 'show']);
-});
-
-// Review Fields Routes
-Route::prefix('review-fields')->group(function () {
-    Route::get('/', [ReviewFieldController::class, 'index']);
-    Route::get('/{reviewField}', [ReviewFieldController::class, 'show']);
-});
-
-Route::post('/networks', [NetworkController::class, 'store']);
-Route::get('/networks', [NetworkController::class, 'index']);
-Route::delete('/networks/{id}', [NetworkController::class, 'destroy']);
 
 Route::prefix('clients')->group(function () {
     Route::post('/register', [ClientController::class, 'register']);
@@ -70,10 +53,6 @@ Route::post('/clients/reset-password', [PasswordController::class, 'reset']);
 
 Route::get('/listing/{network}', [ListingController::class, 'fetch']);
 
-Route::post('/clients/reset-password',  [PasswordController::class, 'reset']);
-
-Route::get('/listing/{network}', [ListingController::class, 'fetch']);
-
 Route::post('/reviews/analyze', [ReviewController::class, 'analyze']);
 Route::get('/reviews',  [ReviewController::class, 'fetch']);
 Route::post('/reviews', [ReviewController::class, 'create']);
@@ -86,4 +65,7 @@ Route::middleware('auth:clients')->prefix('notifications')->group(function () {
     Route::delete('/{notification}', [NotificationController::class, 'destroy']);
 });
 
+// Après
+Route::apiResource('networks', NetworkController::class);
 
+Route::apiResource('fields', FieldController::class);

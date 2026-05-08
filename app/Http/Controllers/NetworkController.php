@@ -38,6 +38,43 @@ class NetworkController extends Controller
         ], 200);
     }
 
+    // Get a network by ID
+    public function show($id)
+    {
+        $network = Network::find($id);
+
+        if (!$network) {
+            return response()->json(['message' => 'Network not found'], 404);
+        }
+
+        return response()->json([
+            'network' => $network,
+        ], 200);
+    }
+
+    // Update a network
+    public function update(Request $request, $id)
+    {
+        $network = Network::find($id);
+
+        if (!$network) {
+            return response()->json(['message' => 'Network not found'], 404);
+        }
+
+        $request->validate([
+            'name'         => 'sometimes|string|unique:networks,name,' . $id,
+            'label'        => 'sometimes|string',
+            'slug_pattern' => 'sometimes|string',
+        ]);
+
+        $network->update($request->only(['name', 'label', 'slug_pattern']));
+
+        return response()->json([
+            'message' => 'Network updated successfully',
+            'network' => $network->fresh(),
+        ], 200);
+    }
+
     // Delete a network
     public function destroy($id)
     {
