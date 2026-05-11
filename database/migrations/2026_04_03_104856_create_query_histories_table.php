@@ -9,12 +9,12 @@ return new class extends Migration {
     {
         Schema::create('query_histories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');  // ← client_id → user_id, clients → users
             $table->enum('type', ['listing', 'reviews']);
             $table->string('network');
             $table->string('slug');
             $table->json('fields')->nullable();
-            $table->json('filters')->nullable(); // min_rating, max_rating, date_range (reviews only)
+            $table->json('filters')->nullable();
             $table->enum('status', ['success', 'error']);
             $table->json('response')->nullable();
             $table->timestamp('executed_at');

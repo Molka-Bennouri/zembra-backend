@@ -11,10 +11,10 @@ class DashboardController extends Controller
 {
     public function kpis(): JsonResponse
     {
-        $clientId = auth('clients')->id();
+        $clientId = auth('api')->id();
         $since = now()->subDay();
 
-        $requests24hQuery = QueryHistory::where('client_id', $clientId)
+        $requests24hQuery = QueryHistory::where('user_id', $clientId)
             ->where('executed_at', '>=', $since);
 
         $total   = (clone $requests24hQuery)->count();
@@ -53,9 +53,9 @@ class DashboardController extends Controller
 
     public function requests(): JsonResponse
     {
-        $clientId = auth('clients')->id();
+        $clientId = auth('api')->id();
 
-        $data = QueryHistory::where('client_id', $clientId)
+        $data = QueryHistory::where('user_id', $clientId)
             ->orderBy('executed_at', 'desc')
             ->take(5)
             ->get();

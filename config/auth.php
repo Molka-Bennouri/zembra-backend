@@ -44,9 +44,11 @@ return [
             'driver' => 'jwt',
             'provider' => 'users',
         ],
-        'clients' => [        // ✅ just add this
-            'driver'   => 'jwt',
-            'provider' => 'clients',
+        'providers' => [
+            'users' => [
+                'driver' => 'eloquent',
+                'model'  => App\Models\User::class,
+            ],
         ],
     ],
 

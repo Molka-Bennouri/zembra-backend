@@ -9,7 +9,7 @@ class NotificationController extends Controller
 {
     public function index(): JsonResponse
     {
-        $notifications = Notification::where('client_id', auth('clients')->id())
+        $notifications = Notification::where('user_id', auth('api')->id())
             ->latest()
             ->get();
 
@@ -25,7 +25,7 @@ class NotificationController extends Controller
 
     public function markAllSeen(): JsonResponse
     {
-        Notification::where('client_id', auth('clients')->id())
+        Notification::where('user_id', auth('api')->id())
             ->where('seen', false)
             ->update(['seen' => true]);
 
@@ -41,12 +41,12 @@ class NotificationController extends Controller
 
     public function clearAll(): JsonResponse
     {
-        Notification::where('client_id', auth('clients')->id())->delete();
+        Notification::where('user_id', auth('api')->id())->delete();
         return response()->json(['message' => 'All notifications cleared']);
     }
 
     private function authorizeNotification(Notification $notification): void
     {
-        abort_if($notification->client_id !== auth('clients')->id(), 403, 'Unauthorized');
+        abort_if($notification->user_id !== auth('api')->id(), 403, 'Unauthorized');
     }
 }
