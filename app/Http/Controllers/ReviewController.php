@@ -84,9 +84,9 @@ class ReviewController extends Controller
             data_set($responseData, 'data.returned', count($ratingFiltered));
         }
 
-        if ($request->user('clients')) {
+        if ($request->user('api')) {
             QueryHistory::create([
-                'client_id'   => $request->user('clients')->id,
+                'user_id'   => $request->user()->id,
                 'type'        => 'reviews',
                 'network'     => $request->query('network'),
                 'slug'        => $request->query('slug'),

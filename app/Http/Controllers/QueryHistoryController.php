@@ -9,21 +9,18 @@ class QueryHistoryController extends Controller
 {
     public function index(Request $request)
     {
-        $client = auth('clients')->user();
-
         return response()->json(
-            QueryHistory::where('client_id', $client->id)
+            QueryHistory::where('user_id', $request->user()->id)
                 ->when($request->type, fn($q, $t) => $q->where('type', $t))
                 ->latest('executed_at')
                 ->get()
         );
     }
 
+
     public function destroy(Request $request, $id)
     {
-        $client = auth('clients')->user();
-
-        QueryHistory::where('client_id', $client->id)
+        QueryHistory::where('user_id', $request->user()->id)
             ->findOrFail($id)
             ->delete();
 
@@ -32,9 +29,7 @@ class QueryHistoryController extends Controller
 
     public function destroyAll(Request $request)
     {
-        $client = auth('clients')->user();
-
-        QueryHistory::where('client_id', $client->id)
+        QueryHistory::where('user_id', $request->user()->id)
             ->when($request->type, fn($q, $t) => $q->where('type', $t))
             ->delete();
 
