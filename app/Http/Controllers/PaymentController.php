@@ -27,7 +27,7 @@ class PaymentController extends Controller
             'plan_id' => 'required|exists:plans,id',
         ]);
 
-        $client = auth('clients')->user();
+        $client = auth('api')->user();
 
         if (!$client) {
             return response()->json(['error' => 'Unauthenticated'], 401);
@@ -50,7 +50,7 @@ class PaymentController extends Controller
      */
     public function listPaymentMethods()
     {
-        $client = auth('clients')->user();
+        $client = auth('api')->user();
 
         if (!$client || !$client->stripe_customer_id) {
             return response()->json(['payment_methods' => []]);

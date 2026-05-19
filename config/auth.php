@@ -14,8 +14,6 @@ return [
     */
 
     'defaults' => [
-
-        'guard' => 'clients',
         'guard'     => 'api',
         'passwords' => 'users',
 
@@ -43,8 +41,6 @@ return [
             'driver'   => 'session',
             'provider' => 'users',
         ],
-
-        'clients' => [        // ✅ just add this
 
         'api' => [
 
@@ -118,5 +114,5 @@ return [
 
     'password_timeout' => 10800,
 
-]
+
 ];

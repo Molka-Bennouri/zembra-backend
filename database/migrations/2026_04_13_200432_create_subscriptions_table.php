@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+            $table->foreignId('client_id')->constrained('users')->cascadeOnDelete(); // ← 'clients' → 'users'
             $table->foreignId('plan_id')->constrained('plans')->restrictOnDelete();
             $table->string('stripe_subscription_id')->unique()->nullable();
             $table->string('status'); // active | canceled | past_due | incomplete

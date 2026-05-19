@@ -55,7 +55,7 @@ Route::post('/reviews/analyze', [ReviewController::class, 'analyze']);
 Route::get('/reviews',  [ReviewController::class, 'fetch']);
 Route::post('/reviews', [ReviewController::class, 'create']);
 
-Route::middleware('auth:clients')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::get('/kpis', [DashboardController::class, 'kpis']);
     Route::get('/dashboard/requests', [DashboardController::class, 'requests']);
 });
@@ -104,7 +104,7 @@ Route::get('/plans', [PlanController::class, 'index']);
 // Stripe webhook (sans auth)
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
-Route::middleware('auth:clients')->group(function () {
+Route::middleware('auth:api')->group(function () {
     Route::get('/payments/methods', [PaymentController::class, 'listPaymentMethods']);
     Route::post('/stripe/save-payment-method', [StripeController::class, 'savePaymentMethod']);
 
@@ -112,4 +112,4 @@ Route::middleware('auth:clients')->group(function () {
     Route::get('/stripe/payment-methods', [PaymentController::class, 'listPaymentMethods']);
 });
 
-Route::middleware('auth:clients')->get('/profile', [ClientController::class, 'profile']);
+Route::middleware('auth:api')->get('/profile', [ClientController::class, 'profile']);

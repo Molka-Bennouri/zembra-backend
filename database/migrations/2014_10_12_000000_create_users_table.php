@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('role', ['client', 'admin'])->default('client');
+            $table->string('stripe_customer_id')->nullable(); // ← add this
             $table->timestamps();
         });
     }

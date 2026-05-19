@@ -23,8 +23,8 @@ class Payment extends Model
         'amount'  => 'float',
     ];
 
-    public function client()
+    public function user()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(User::class);
     }
 }

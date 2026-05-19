@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+            $table->foreignId('client_id')->constrained('users')->cascadeOnDelete(); // ← 'clients' → 'users'
             $table->string('stripe_payment_intent_id')->unique()->nullable();
             $table->string('stripe_invoice_id')->nullable();
             $table->string('invoice_pdf_url')->nullable();
