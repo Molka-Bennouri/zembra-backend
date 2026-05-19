@@ -14,7 +14,7 @@ class QueryHistory extends Model
     protected $table = 'query_histories';
 
     protected $fillable = [
-        'client_id',
+        'user_id',
         'type',
         'network',
         'slug',
@@ -31,8 +31,8 @@ class QueryHistory extends Model
         'response' => 'array',
     ];
 
-    public function client()
+    public function user()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

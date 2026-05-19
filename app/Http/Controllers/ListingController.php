@@ -26,9 +26,9 @@ class ListingController extends Controller
         $responseData = $response->json();
 
         // Save to history if client is authenticated
-        if ($request->user('clients')) {
+        if ($request->user('api')) {
             QueryHistory::create([
-                'client_id'   => $request->user('clients')->id,
+                'user_id'     => $request->user()->id,
                 'type'        => 'listing',
                 'network'     => $network,
                 'slug'        => $slug,

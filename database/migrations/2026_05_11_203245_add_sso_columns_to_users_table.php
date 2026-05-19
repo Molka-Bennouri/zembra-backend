@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        Schema::table('clients', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
         });
@@ -15,7 +15,7 @@ return new class extends Migration {
 
     public function down()
     {
-        Schema::table('clients', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->dropColumn(['provider', 'provider_id']);
         });
     }

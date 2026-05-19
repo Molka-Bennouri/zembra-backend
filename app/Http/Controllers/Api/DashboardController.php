@@ -9,19 +9,14 @@ use App\Models\QueryHistory;
 
 class DashboardController extends Controller
 {
-    /**
-     * GET /api/kpis
-     */
     public function kpis(): JsonResponse
     {
-        $clientId = auth('clients')->id();
-        $since    = now()->subDay();
+        $clientId = auth('api')->id();
+        $since = now()->subDay();
 
-        // Base query filtrée par client
-        $requests24hQuery = QueryHistory::where('client_id', $clientId)
+        $requests24hQuery = QueryHistory::where('user_id', $clientId)
             ->where('executed_at', '>=', $since);
 
-        // Totals
         $total   = (clone $requests24hQuery)->count();
         $success = (clone $requests24hQuery)->where('status', 'success')->count();
         $errors  = (clone $requests24hQuery)->where('status', 'error')->count();
@@ -30,14 +25,9 @@ class DashboardController extends Controller
             ? round(($success / $total) * 100, 2)
             : 0;
 
-        // Réseaux utilisés par CE client (via ses QueryHistory)
-        $usedNetworkNames = QueryHistory::where('client_id', $clientId)
-            ->whereNotNull('network')
-            ->distinct()
-            ->pluck('network'); // ex: ['linkedin', 'twitter']
+        $totalNetworks = Network::count();
 
-        $networks = Network::whereIn('name', $usedNetworkNames)
-            ->select('id', 'name', 'label')
+        $networks = Network::select('id', 'name', 'label')
             ->get()
             ->map(fn($n) => [
                 'id'     => $n->id,
@@ -45,8 +35,6 @@ class DashboardController extends Controller
                 'label'  => $n->label,
                 'active' => true,
             ]);
-
-        $totalNetworks = $networks->count();
 
         return response()->json([
             'networks' => [
@@ -63,16 +51,13 @@ class DashboardController extends Controller
         ]);
     }
 
-    /**
-     * GET /api/dashboard/requests
-     */
     public function requests(): JsonResponse
     {
-        $clientId = auth('clients')->id();
+        $clientId = auth('api')->id();
 
-        $data = QueryHistory::where('client_id', $clientId)
+        $data = QueryHistory::where('user_id', $clientId)
             ->orderBy('executed_at', 'desc')
-            ->take(50)
+            ->take(5)
             ->get();
 
         return response()->json(

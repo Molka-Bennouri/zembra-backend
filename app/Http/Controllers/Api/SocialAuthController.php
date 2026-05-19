@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Client;
+use App\Models\User;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Str;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
@@ -45,25 +45,32 @@ class SocialAuthController extends Controller
     // Création / récupération utilisateur + JWT
     private function handleSocialLogin($socialUser, $provider)
     {
-        $client = Client::where('email', $socialUser->getEmail())->first();
+        // Cherche dans users au lieu de clients
+        $user = User::where('email', $socialUser->getEmail())->first();
 
-        if (!$client) {
-            $client = Client::create([
-                'full_name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
-                'email' => $socialUser->getEmail(),
-                'password' => bcrypt(Str::random(24)),
-                'provider' => $provider,
+        if (!$user) {
+            // Nouveau user → toujours role client
+            $user = User::create([
+                'full_name'   => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
+                'email'       => $socialUser->getEmail(),
+                'password'    => bcrypt(Str::random(24)),
+                'role'        => 'client',
+                'provider'    => $provider,
                 'provider_id' => $socialUser->getId(),
             ]);
+
+            // Créer le profil client vide
+            $user->clientProfile()->create([]);
+
         } else {
-            $client->update([
-                'provider' => $provider,
+            $user->update([
+                'provider'    => $provider,
                 'provider_id' => $socialUser->getId(),
             ]);
         }
 
-        // Génération du token JWT
-        $token = JWTAuth::fromUser($client);
+        // Génération du token JWT avec guard api
+        $token = JWTAuth::fromUser($user);
 
         return redirect(env('FRONTEND_URL', 'http://localhost:3000') . '/auth/callback?token=' . $token);
     }

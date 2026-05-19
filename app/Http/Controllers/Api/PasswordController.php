@@ -5,23 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Client;
-use App\Notifications\ResetClientPasswordNotification;
 
 class PasswordController extends Controller
 {
-    /**
-     * Envoyer le lien de réinitialisation au client
-     */
     public function forgot(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:clients,email',
+            'email' => 'required|email|exists:users,email',  // ← clients → users
         ]);
 
-        $status = Password::broker('clients')->sendResetLink(
+        $status = Password::broker('users')->sendResetLink(  // ← clients → users
             $request->only('email')
         );
 
@@ -33,16 +27,16 @@ class PasswordController extends Controller
     public function reset(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:clients,email',
-            'token' => 'required',
+            'email'    => 'required|email|exists:users,email',  // ← clients → users
+            'token'    => 'required',
             'password' => 'required|min:6|confirmed',
         ]);
 
-        $status = Password::broker('clients')->reset(
+        $status = Password::broker('users')->reset(  // ← clients → users
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($client, $password) {
-                $client->password = Hash::make($password);
-                $client->save();
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
             }
         );
 
