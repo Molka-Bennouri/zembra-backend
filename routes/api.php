@@ -95,6 +95,7 @@ Route::middleware('auth:api')->group(function () {
     // Admin uniquement
     Route::middleware('role:admin')->prefix('admin')->group(function () {
         Route::get('/clients',          [AdminController::class, 'listClients']);
+        Route::put('/clients/{id}',     [AdminController::class, 'updateClient']);
         Route::delete('/clients/{id}',  [AdminController::class, 'deleteClient']);
     });
 });
