@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Network;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use App\Models\QueryHistory;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -82,4 +84,48 @@ class DashboardController extends Controller
             })
         );
     }
+
+    public function chart(Request $request): JsonResponse
+    {
+        $clientId = auth('api')->id();
+        $days     = (int) $request->query('days', 7);
+        $days     = max(1, min($days, 90)); // clamp between 1 and 90
+
+        $since = now()->subDays($days - 1)->startOfDay();
+
+        // Aggregate by calendar date
+        $rows = QueryHistory::where('user_id', $clientId)
+            ->where('executed_at', '>=', $since)
+            ->select([
+                DB::raw('DATE(executed_at) as date'),
+                DB::raw('COUNT(*) as total'),
+                DB::raw('SUM(CASE WHEN status = \'success\' THEN 1 ELSE 0 END) as success_count'),
+            ])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy('date');
+
+        // Build a complete range so missing days appear as zeros
+        $result = [];
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date    = now()->subDays($i)->toDateString();
+            $row     = $rows->get($date);
+            $total   = $row ? (int) $row->total : 0;
+            $success = $row ? (int) $row->success_count : 0;
+
+            $result[] = [
+                'label'        => now()->subDays($i)->format('D'), // Mon, Tue …
+                'date'         => $date,
+                'total'        => $total,
+                'success'      => $success,
+                'success_rate' => $total > 0
+                    ? round(($success / $total) * 100, 1)
+                    : 0,
+            ];
+        }
+
+        return response()->json($result);
+    }
+
 }
