@@ -27,7 +27,12 @@ class DashboardController extends Controller
             ? round(($success / $total) * 100, 2)
             : 0;
 
+        // After
         $totalNetworks = Network::count();
+
+        $usedNetworkNames = QueryHistory::where('user_id', $clientId)
+            ->distinct()
+            ->pluck('network');
 
         $networks = Network::select('id', 'name', 'label')
             ->get()
@@ -35,12 +40,12 @@ class DashboardController extends Controller
                 'id'     => $n->id,
                 'name'   => $n->name,
                 'label'  => $n->label,
-                'active' => true,
+                'active' => $usedNetworkNames->contains($n->name),
             ]);
 
         return response()->json([
             'networks' => [
-                'active' => $totalNetworks,
+                'active' => $usedNetworkNames->count(),
                 'total'  => $totalNetworks,
                 'list'   => $networks,
             ],
