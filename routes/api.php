@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\AdminDashboardController;
+use App\Http\Controllers\MatchController; // 👈 ajoute l'import
 
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PaymentController;
@@ -43,6 +44,10 @@ Route::post('/reset-password', [PasswordController::class, 'reset']);
 
 
 // Public
+
+
+// avec les autres routes publiques
+Route::get('/listing/match', [MatchController::class, 'match']);
 Route::get('/listing/{network}', [ListingController::class, 'fetch']);
 Route::post('/reviews/analyze', [ReviewController::class, 'analyze']);
 Route::get('/reviews', [ReviewController::class, 'fetch']);
