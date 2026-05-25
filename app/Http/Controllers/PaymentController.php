@@ -2,73 +2,88 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Payment;
 use App\Models\Plan;
-use App\Services\StripeService;
+use App\Http\Resources\PaymentResource;
 use Illuminate\Http\Request;
-use Stripe\PaymentMethod;
+use Stripe\Invoice;
 use Stripe\Stripe;
+use Stripe\Checkout\Session;
 
 class PaymentController extends Controller
 {
-    protected StripeService $stripeService;
-
-    public function __construct(StripeService $stripeService)
+    /**
+     * GET /api/payments
+     * Retourne les paiements de l'utilisateur connecté.
+     */
+    public function index(Request $request)
     {
-        Stripe::setApiKey(config('services.stripe.secret'));
-        $this->stripeService = $stripeService;
+        $payments = Payment::where('client_id', $request->user()->id)
+            ->orderByDesc('paid_at')
+            ->orderByDesc('created_at')
+            ->get();
+
+        return PaymentResource::collection($payments);
     }
 
     /**
-     * Crée une Stripe Checkout Session et retourne l'URL
+     * POST /api/checkout
+     * Crée une session Stripe Checkout.
      */
     public function createCheckoutSession(Request $request)
     {
-        $request->validate([
-            'plan_id' => 'required|exists:plans,id',
-        ]);
-
-        $client = auth('api')->user();
-
-        if (!$client) {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
-
-        $plan = Plan::findOrFail($request->plan_id);
-
         try {
-            $url = $this->stripeService->createCheckoutSession($client, $plan);
+            $request->validate([
+                'plan_id' => 'required|exists:plans,id'
+            ]);
 
-            return response()->json(['checkout_url' => $url]);
+            $plan = Plan::findOrFail($request->plan_id);
+
+            $url = app(\App\Services\StripeService::class)
+                ->createCheckoutSession($request->user(), $plan);
+
+            return response()->json([
+                'checkout_url' => $url
+            ]);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
-
     /**
-     * Liste les payment methods du client
+     * GET /api/payments/{id}/invoice
+     * Télécharge le PDF de la facture Stripe.
      */
-    public function listPaymentMethods()
+    public function invoice(Request $request, int $id)
     {
-        $client = auth('api')->user();
+        $payment = Payment::where('client_id', $request->user()->id)
+            ->where('id', $id)
+            ->firstOrFail();
 
-        if (!$client || !$client->stripe_customer_id) {
-            return response()->json(['payment_methods' => []]);
+        if (!$payment->stripe_invoice_id) {
+            return response()->json([
+                'error' => 'Aucune facture disponible pour ce paiement.'
+            ], 404);
         }
 
-        $methods = PaymentMethod::all([
-            'customer' => $client->stripe_customer_id,
-            'type'     => 'card',
-        ]);
+        Stripe::setApiKey(config('services.stripe.secret'));
 
-        return response()->json([
-            'payment_methods' => collect($methods->data)->map(fn($pm) => [
-                'id'        => $pm->id,
-                'brand'     => $pm->card->brand ?? null,
-                'last4'     => $pm->card->last4 ?? null,
-                'exp_month' => $pm->card->exp_month ?? null,
-                'exp_year'  => $pm->card->exp_year ?? null,
-            ]),
+        $invoice = Invoice::retrieve($payment->stripe_invoice_id);
+
+        if (!$invoice->invoice_pdf) {
+            return response()->json([
+                'error' => 'PDF non disponible.'
+            ], 404);
+        }
+
+        $pdfContent = file_get_contents($invoice->invoice_pdf);
+
+        return response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' =>
+                "attachment; filename=\"facture-{$payment->id}.pdf\"",
         ]);
     }
 }

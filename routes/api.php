@@ -111,10 +111,9 @@ Route::get('/plans', [PlanController::class, 'index']);
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('/payments/methods', [PaymentController::class, 'listPaymentMethods']);
-
-    Route::post('/stripe/checkout', [PaymentController::class, 'createCheckoutSession']);
-    Route::get('/stripe/payment-methods', [PaymentController::class, 'listPaymentMethods']);
+    Route::post('/stripe/checkout',       [PaymentController::class, 'createCheckoutSession']);
+    Route::get('/payments',               [PaymentController::class, 'index']);
+    Route::get('/payments/{id}/invoice',  [PaymentController::class, 'invoice']);
 });
 
 Route::middleware('auth:api')->get('/profile', [ClientController::class, 'profile']);
@@ -130,3 +129,5 @@ Route::prefix('admin/dashboard')->middleware('auth:api')->group(function () {
 
 
 });
+
+
