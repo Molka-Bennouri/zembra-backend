@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Services\StripeService;
+use App\Services\Stripeservice;
 
 class StripeWebhookController extends Controller
 {
@@ -14,30 +14,43 @@ class StripeWebhookController extends Controller
         $sigHeader = $request->header('Stripe-Signature');
 
         try {
-            $event = app(StripeService::class)->constructWebhookEvent($payload, $sigHeader);
+            $event = app(StripeService::class)
+                ->constructWebhookEvent($payload, $sigHeader);
         } catch (\Exception $e) {
-            Log::error('Stripe signature invalid', ['error' => $e->getMessage()]);
+            Log::error('Stripe signature invalid', [
+                'error' => $e->getMessage()
+            ]);
+
             return response()->json(['error' => 'invalid signature'], 400);
         }
 
-        $type   = $event->type;
-        $object = $event->data->object->toArray();
-
-        Log::info('Stripe event received', ['type' => $type, 'id' => $event->id]);
+        Log::info('Stripe event received', [
+            'type' => $event->type,
+            'id'   => $event->id
+        ]);
 
         try {
-            match ($type) {
-                'checkout.session.completed'     => app(StripeService::class)->handleCheckoutCompleted($object),
-                'payment_intent.payment_failed'  => app(StripeService::class)->handlePaymentFailed($object),
-                default                          => Log::info('Stripe event ignored', ['type' => $type]),
+            match ($event->type) {
+
+                'checkout.session.completed' =>
+                app(Stripeservice::class)
+                    ->handleCheckoutCompleted($event),
+
+                'payment_intent.payment_failed' =>
+                app(Stripeservice::class)
+                    ->handlePaymentFailed($event->data->object->toArray()),
+
+                default =>
+                Log::info('Stripe event ignored', [
+                    'type' => $event->type
+                ]),
             };
         } catch (\Exception $e) {
             Log::error('Stripe webhook handler failed', [
-                'type'  => $type,
+                'type'  => $event->type,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
-            // Retourner 500 → Stripe réessaie automatiquement
+
             return response()->json(['error' => 'handler error'], 500);
         }
 
