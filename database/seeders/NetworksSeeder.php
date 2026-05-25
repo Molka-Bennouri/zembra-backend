@@ -20,7 +20,7 @@ class NetworksSeeder extends Seeder //php artisan db:seed --class=NetworksSeeder
             [
                 'name'         => 'ecommunity',
                 'label'        => 'Community Health Network',
-                'slug_pattern' => '@^https?://(?:[\w-]+\.)*ecommunity\.[a-z.]+/(?:[^/]+/)*providers?/[A-Za-z]+/([0-9]+)/?$@i',
+                'slug_pattern' => '@^https?://(?:[\w-]+\.)*ecommunity\.[a-z.]+(?:/[^/]+)*/providers?/[A-Za-z]+/([0-9]+)/?(?:\?.*)?$@i',
             ],
             [
                 'name'         => 'justia',
