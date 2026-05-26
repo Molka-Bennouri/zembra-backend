@@ -122,12 +122,10 @@ Route::get('/dashboard/chart', [DashboardController::class, 'chart']);
 
 
 Route::prefix('admin/dashboard')->middleware('auth:api')->group(function () {
-
     Route::get('/chart', [AdminDashboardController::class, 'chart']);
     Route::get('/dashboard', [AdminDashboardController::class, 'dashboard']);
     Route::get('/errors', [AdminDashboardController::class, 'errors']);
-
-
+    Route::get('/networks', [AdminDashboardController::class, 'networks']);
 });
 
 
