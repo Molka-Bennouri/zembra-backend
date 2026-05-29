@@ -113,5 +113,15 @@ class AdminDashboardController extends Controller
         return response()->json($grouped);
     }
 
+    public function networks(): JsonResponse
+    {
+        $stats = QueryHistory::select('network', DB::raw('count(*) as count'))
+            ->groupBy('network')
+            ->orderByDesc('count')
+            ->get();
+
+        return response()->json($stats);
+    }
+
 
 }
