@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Models\Payment;
+use App\Models\Notification;
 use App\Models\Plan;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Log;
@@ -102,7 +103,7 @@ class StripeService
             'ends_at'                => now()->addDays($plan->duration_days),
         ]);
 
-        Payment::create([
+        $payment=Payment::create([
             'client_id'                => $client->id,
             'stripe_event_id'          => $event->id,
             'stripe_payment_intent_id' => $session->payment_intent ?? null,
@@ -117,6 +118,13 @@ class StripeService
             'client_id' => $clientId,
             'plan_id'   => $planId,
         ]);
+        Notification::create([
+            'user_id'    => $client->id,
+            'type'       => 'success',
+            'message'    => "Your payment of {$payment->amount} € for the {$plan->name} plan has been confirmed.",
+            'payment_id' => $payment->id,
+            'seen'       => false,
+        ]);
     }
 
     public function handlePaymentFailed($intent): void
@@ -125,12 +133,21 @@ class StripeService
         $client     = User::where('stripe_customer_id', $customerId)->first();
         if (!$client) return;
 
-        Payment::create([
+        $payment=Payment::create([
             'client_id'                => $client->id,
             'stripe_payment_intent_id' => $intent['id'],
             'amount'                   => ($intent['amount'] ?? 0) / 100,
             'status'                   => 'failed',
             'description'              => $intent['description'] ?? 'Payment failed',
         ]);
+        Notification::create([
+            'user_id'    => $client->id,
+            'type'       => 'error',
+            'message'    => "Your payment of {$payment->amount} € has failed. Please check your payment method.",
+            'payment_id' => $payment->id,
+            'seen'       => false,
+        ]);
     }
+
+
 }
