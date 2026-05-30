@@ -139,7 +139,7 @@ class ClientController extends Controller
 
         $request->validate([
             'full_name' => 'required|string',
-            'email'     => 'required|email|unique:clients,email,' . $client->id,
+            'email'     => 'required|email|unique:users,email,' . $client->id,
             'phone'     => 'nullable|string',
             'address'   => 'nullable|string',
         ]);
