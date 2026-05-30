@@ -13,11 +13,12 @@ use App\Http\Controllers\Api\SocialAuthController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\AdminDashboardController;
-use App\Http\Controllers\MatchController; // 👈 ajoute l'import
-
+use App\Http\Controllers\MatchController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\SubscriptionController;
+
 
 use Illuminate\Support\Facades\Route;
 
@@ -132,5 +133,6 @@ Route::prefix('admin/dashboard')->middleware('auth:api')->group(function () {
     Route::get('/errors', [AdminDashboardController::class, 'errors']);
     Route::get('/networks', [AdminDashboardController::class, 'networks']);
 });
+Route::get('/current-plan', [SubscriptionController::class, 'currentPlan']);
 
 
