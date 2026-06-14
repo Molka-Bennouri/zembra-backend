@@ -106,7 +106,7 @@ class StripeService
         $payment=Payment::create([
             'client_id'                => $client->id,
             'stripe_event_id'          => $event->id,
-            'stripe_payment_intent_id' => $session->payment_intent ?? null,
+            'stripe_payment_intent_id' => $this->stripe->invoices->retrieve($session->invoice)->payment_intent ?? null,
             'stripe_invoice_id'        => $session->invoice        ?? null,
             'amount'                   => ($session->amount_total  ?? 0) / 100,
             'status'                   => 'succeeded',

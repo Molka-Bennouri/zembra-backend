@@ -47,7 +47,7 @@ class ClientController extends Controller
     {
         $request->validate([
             'full_name' => 'required|string',
-            'email'     => 'required|email|unique:clients',
+            'email' => 'required|email|unique:users',
             'password'  => 'required|min:6',
         ]);
 
@@ -139,26 +139,18 @@ class ClientController extends Controller
 
         $request->validate([
             'full_name' => 'required|string',
-            'email'     => 'required|email|unique:clients,email,' . $client->id,
-            'phone'     => 'nullable|string',
-            'address'   => 'nullable|string',
+            'email'     => 'required|email|unique:users,email,' . $client->id,
         ]);
 
         $client->update([
             'full_name' => $request->full_name,
             'email'     => $request->email,
         ]);
-
-        $client->clientProfile()->update([
-            'phone'   => $request->phone,
-            'address' => $request->address,
-        ]);
-
         $this->syncStripeCustomer($client);
 
         return response()->json([
             'message' => 'Profile updated.',
-            'user'    => $client->load('clientProfile'),
+            'user' => $client,
         ]);
     }
 

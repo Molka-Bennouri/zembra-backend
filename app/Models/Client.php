@@ -14,6 +14,7 @@ class Client extends Authenticatable implements JWTSubject, CanResetPassword
 {
     use HasFactory, Notifiable, CanResetPasswordTrait;
 
+    protected $table = 'users';
     public $timestamps = false;
 
     protected $fillable = [

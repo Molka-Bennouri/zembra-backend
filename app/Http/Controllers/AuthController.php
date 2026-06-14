@@ -22,9 +22,6 @@ class AuthController extends Controller
             'role'      => 'client', // toujours client à l'inscription
         ]);
 
-        // Créer le profil client vide
-        $user->clientProfile()->create([]);
-
         $token = auth('api')->login($user);
 
         return response()->json(['token' => $token], 201);

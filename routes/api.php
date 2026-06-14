@@ -119,7 +119,6 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/stripe/checkout',       [PaymentController::class, 'createCheckoutSession']);
     Route::get('/payments',               [PaymentController::class, 'index']);
-    Route::get('/payments/{id}/invoice',  [PaymentController::class, 'invoice']);
 });
 
 Route::middleware('auth:api')->get('/profile', [ClientController::class, 'profile']);

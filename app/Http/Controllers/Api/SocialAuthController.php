@@ -59,8 +59,6 @@ class SocialAuthController extends Controller
                 'provider_id' => $socialUser->getId(),
             ]);
 
-            // Créer le profil client vide
-            $user->clientProfile()->create([]);
 
         } else {
             $user->update([
