@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
     public function listClients() {
-        $clients = User::where('role', 'client')->with('clientProfile')->get();
+        $clients = User::where('role', 'client')->get();
         return response()->json($clients);
     }
 
@@ -28,7 +28,7 @@ class AdminController extends Controller
 
         $client->update($validated);
 
-        return response()->json($client->load('clientProfile'));
+        return response()->json($client);
     }
 
     public function deleteClient($id) {

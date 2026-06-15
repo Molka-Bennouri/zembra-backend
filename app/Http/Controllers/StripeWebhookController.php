@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Services\Stripeservice;
+use App\Services\StripeService;
 
 class StripeWebhookController extends Controller
 {
@@ -33,11 +33,11 @@ class StripeWebhookController extends Controller
             match ($event->type) {
 
                 'checkout.session.completed' =>
-                app(Stripeservice::class)
+                app(StripeService::class)
                     ->handleCheckoutCompleted($event),
 
                 'payment_intent.payment_failed' =>
-                app(Stripeservice::class)
+                app(StripeService::class)
                     ->handlePaymentFailed($event->data->object->toArray()),
 
                 default =>

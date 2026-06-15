@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Client;
 use App\Models\User;
 use App\Models\Payment;
 use App\Models\Notification;
@@ -20,7 +21,7 @@ class StripeService
         $this->stripe = new StripeClient(config('services.stripe.secret'));
     }
 
-    public function resolveCustomer(User $client): string
+    public function resolveCustomer(Client $client): string
     {
         if ($client->stripe_customer_id) {
             return $client->stripe_customer_id;
@@ -37,7 +38,7 @@ class StripeService
         return $customer->id;
     }
 
-    public function createCheckoutSession(User $client, Plan $plan): string
+    public function createCheckoutSession(Client $client, Plan $plan): string
     {
         $customerId = $this->resolveCustomer($client);
 
@@ -106,7 +107,7 @@ class StripeService
         $payment=Payment::create([
             'client_id'                => $client->id,
             'stripe_event_id'          => $event->id,
-            'stripe_payment_intent_id' => $session->payment_intent ?? null,
+            'stripe_payment_intent_id' => $this->stripe->invoices->retrieve($session->invoice)->payment_intent ?? null,
             'stripe_invoice_id'        => $session->invoice        ?? null,
             'amount'                   => ($session->amount_total  ?? 0) / 100,
             'status'                   => 'succeeded',
